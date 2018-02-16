@@ -11,6 +11,7 @@ public class ItemBase {
     private UUID id;
     private String name;
     private Type type;
+    private ItemGroup group;
 
     public ItemBase() {
         this.id = UUID.randomUUID();
@@ -34,5 +35,13 @@ public class ItemBase {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ItemGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(ItemGroup group) {
+        this.group = group;
     }
 }

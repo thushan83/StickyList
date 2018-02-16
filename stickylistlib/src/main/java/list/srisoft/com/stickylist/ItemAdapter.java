@@ -27,8 +27,10 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     private List<T> items = new ArrayList<>();
     private int groupLayout;
     private int childLayout;
+    private List<T> prevExpandedItems;
     private Class<GIVH> typeGroupHolder;
     private Class<CIVH> typeChildHolder;
+    private OnItemClickedListener onItemClickedListener;
 
     public ItemAdapter(int groupLayout, int childLayout,
                        Class<GIVH> typeGroupHolder, Class<CIVH> typeChildHolder) {
@@ -70,10 +72,21 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolderBase holder, int position) {
+    public void onBindViewHolder(ViewHolderBase holder, final int position) {
         Log.d("SL", "onBindViewHolder - " + position);
         ItemBase item = items.get(position);
         holder.bind(item);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (prevExpandedItems != null) {
+                    items.removeAll(prevExpandedItems);
+                }
+
+                notifyDataSetChanged();
+                onItemClickedListener.onItemClicked(position);
+            }
+        });
     }
 
     @Override
@@ -97,8 +110,23 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
         return items.size();
     }
 
+    public void setOnClickListener(OnItemClickedListener onItemClickedListener) {
+        this.onItemClickedListener = onItemClickedListener;
+    }
+
     public void setData(List<T> data) {
         Log.d("SL", "setData");
         items.addAll(data);
+    }
+
+    public void setData(int pos, List<T> data) {
+        Log.d("SL", "setData");
+        prevExpandedItems = data;
+        items.addAll(pos + 1, data);
+        notifyItemRangeChanged(pos + 1, data.size());
+    }
+
+    interface OnItemClickedListener {
+        void onItemClicked(int position);
     }
 }
