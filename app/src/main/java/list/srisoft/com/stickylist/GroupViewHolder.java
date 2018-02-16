@@ -1,5 +1,6 @@
 package list.srisoft.com.stickylist;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,7 +19,8 @@ public class GroupViewHolder extends GroupItemViewHolder {
     @Override
     public void bind(GroupItem item) {
         TextView tvChildCption = itemView.findViewById(R.id.group_caption);
-        Group member = (Group) item;
-        tvChildCption.setText(member.getGroupName());
+        Group group = (Group) item;
+        Log.d("sample","GroupViewHolder bind - "+group.getGroupName()+" Id - "+group.getId());
+        tvChildCption.setText(group.getGroupName());
     }
 }

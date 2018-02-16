@@ -1,5 +1,6 @@
 package list.srisoft.com.stickylist;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ public class MemberViewHolder extends ChildItemViewHolder {
 
     @Override
     public void bind(ChildItem item) {
+        Log.d("sample","MemberViewHolder bind");
         TextView tvChildCption = itemView.findViewById(R.id.child_caption);
         Member member = (Member) item;
         tvChildCption.setText(member.getFullName());
