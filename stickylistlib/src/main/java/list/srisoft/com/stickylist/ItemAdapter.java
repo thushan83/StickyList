@@ -27,7 +27,7 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     private List<T> items = new ArrayList<>();
     private int groupLayout;
     private int childLayout;
-    private List<T> prevExpandedItems;
+    private List<T> prevExpandedItems = new ArrayList<>();
     private Class<GIVH> typeGroupHolder;
     private Class<CIVH> typeChildHolder;
     private OnItemClickedListener onItemClickedListener;
@@ -84,7 +84,9 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
                 }
 
                 notifyDataSetChanged();
-                onItemClickedListener.onItemClicked(position);
+                int pos = position - prevExpandedItems.size();
+                pos = pos < 0 ? position: pos;
+                onItemClickedListener.onItemClicked(pos);
             }
         });
     }
