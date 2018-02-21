@@ -12,6 +12,7 @@ public class ItemBase {
     private String name;
     private Type type;
     private ItemGroup group;
+    private boolean expanded;
 
     public ItemBase() {
         this.id = UUID.randomUUID();
@@ -43,5 +44,13 @@ public class ItemBase {
 
     public void setGroup(ItemGroup group) {
         this.group = group;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import list.srisoft.com.stickylist.models.ItemBase;
+import list.srisoft.com.stickylist.models.ItemGroup;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,16 +26,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         final ItemAdapter<GroupViewHolder, MemberViewHolder, ItemBase> adapter = new ItemAdapter<>(R.layout.group_item_view,
-                R.layout.child_item_view, GroupViewHolder.class, MemberViewHolder.class);
+                R.layout.child_item_view, GroupViewHolder.class
+                , MemberViewHolder.class,recyclerView, this);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        List<ItemBase> items = new ArrayList<>();
+        final List<ItemBase> items = new ArrayList<>();
 
         for(int i = 0; i < 1000; i++){
             Group group1 = new Group();
             group1.setGroupName("Group"+i);
+
+            int groupId = randomWithRange(1,10);
+            ItemGroup itemGroup = new ItemGroup();
+            itemGroup.setGroupName("Group "+groupId);
+            group1.setGroup(itemGroup);
+
+            int members = randomWithRange(1,10);
+            List<Member> itemList = new ArrayList<>();
+            for(int j = 0; j < members; j++){
+                Member member = new Member();
+                member.setFullName("Member "+j);
+                itemList.add(member);
+            }
+            group1.setMemberList(itemList);
             items.add(group1);
         }
 
@@ -46,15 +62,9 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnClickListener(new ItemAdapter.OnItemClickedListener() {
             @Override
             public void onItemClicked(int position) {
-                int members = randomWithRange(1,10);
-                List<ItemBase> itemList = new ArrayList<>();
-                for(int j = 0; j < members; j++){
-                    Member member = new Member();
-                    member.setFullName("Member "+j);
-                    itemList.add(member);
-                }
                 Log.d("Test","position - "+position);
-                adapter.setData(position,itemList);
+                List<ItemBase> memebers = ((Group)items.get(position)).getMemberList();
+                adapter.setData(position, memebers);
             }
         });
 

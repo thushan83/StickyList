@@ -1,5 +1,6 @@
 package list.srisoft.com.stickylist;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 
 import list.srisoft.com.stickylist.holders.ChildItemViewHolder;
 import list.srisoft.com.stickylist.holders.GroupItemViewHolder;
 import list.srisoft.com.stickylist.holders.ViewHolderBase;
+import list.srisoft.com.stickylist.itemdecoration.ItemDecoration;
+import list.srisoft.com.stickylist.models.GroupItem;
 import list.srisoft.com.stickylist.models.ItemBase;
 import list.srisoft.com.stickylist.util.Type;
 
@@ -27,17 +31,22 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     private List<T> items = new ArrayList<>();
     private int groupLayout;
     private int childLayout;
+    private T lastExpandedItem;
     private List<T> prevExpandedItems = new ArrayList<>();
     private Class<GIVH> typeGroupHolder;
     private Class<CIVH> typeChildHolder;
     private OnItemClickedListener onItemClickedListener;
+    private RecyclerView recyclerView;
 
     public ItemAdapter(int groupLayout, int childLayout,
-                       Class<GIVH> typeGroupHolder, Class<CIVH> typeChildHolder) {
+                       Class<GIVH> typeGroupHolder, Class<CIVH> typeChildHolder
+            , RecyclerView recyclerView, Context context) {
         this.groupLayout = groupLayout;
         this.childLayout = childLayout;
         this.typeGroupHolder = typeGroupHolder;
         this.typeChildHolder = typeChildHolder;
+        this.recyclerView = recyclerView;
+        this.recyclerView.addItemDecoration(new ItemDecoration((List<GroupItem>) items, context));
     }
 
     @Override
@@ -74,7 +83,7 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     @Override
     public void onBindViewHolder(ViewHolderBase holder, final int position) {
         Log.d("SL", "onBindViewHolder - " + position);
-        ItemBase item = items.get(position);
+        final ItemBase item = items.get(position);
         holder.bind(item);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,8 +94,15 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
 
                 notifyDataSetChanged();
                 int pos = position - prevExpandedItems.size();
-                pos = pos < 0 ? position: pos;
-                onItemClickedListener.onItemClicked(pos);
+                int usableposition = pos < 0 ? position : pos;
+                T item = items.get(usableposition);
+
+                if (!item.isExpanded()){
+                    onItemClickedListener.onItemClicked(usableposition);
+                    item.setExpanded(true);
+                } else {
+                    item.setExpanded(false);
+                }
             }
         });
     }
@@ -124,6 +140,8 @@ public class ItemAdapter<GIVH extends GroupItemViewHolder, CIVH extends ChildIte
     public void setData(int pos, List<T> data) {
         Log.d("SL", "setData");
         prevExpandedItems = data;
+        lastExpandedItem = items.get(pos);
+        lastExpandedItem.setExpanded(true);
         items.addAll(pos + 1, data);
         notifyItemRangeChanged(pos + 1, data.size());
     }
